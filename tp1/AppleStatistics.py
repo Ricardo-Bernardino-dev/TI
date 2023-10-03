@@ -49,3 +49,4 @@ def calculate_stats(data: json):
 
 data = fetch_data("AAPL")
 calculate_stats(data)
+plot_histogram(data)
