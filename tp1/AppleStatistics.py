@@ -20,22 +20,40 @@ def fetch_data(ticker: str) -> json:
     return requests.get(url, headers=headers, params=querystring).json()
 
 
-def plot_histogram(data: dict):
-    daily_close_prices = data["Time Series (Daily)"]
-    close_prices = [
-        float(daily_data["4. close"])
-        for daily_data in daily_close_prices.values()
+def plot_histogram(data: dict, price_type: int):
+    daily_prices = data["Time Series (Daily)"]
+    
+    price_columns = {
+        1: "1. open",
+        2: "2. high",
+        3: "3. low",
+        4: "4. close"
+    }
+
+    price_labels = {
+        1: "Opening Prices",
+        2: "Higher Prices",
+        3: "Lowest Prices",
+        4: "Closing Prices"
+    }
+    
+    if price_type not in price_columns:
+        print("Invalid price_type. Choose a number between 1 and 4.")
+        return
+    
+    column_name = price_columns[price_type]
+    column_label = price_labels[price_type]
+    prices = [
+        float(daily_data[column_name])
+        for daily_data in daily_prices.values()
     ]
 
-    # Create a histogram with 20 bins (adjust as needed)
-    plt.hist(close_prices, bins=20, color='blue', alpha=0.7)
-
-    plt.title("Histogram of AAPL Stock Prices")
-    plt.xlabel("Closing Price")
+    plt.hist(prices, bins=20, color='blue', alpha=0.7)
+    plt.title(f"Histogram of {column_label}")
+    plt.xlabel(column_label)
     plt.ylabel("Frequency")
     plt.grid(True)
     plt.show()
-
 
 def calculate_stats(data: json):
     daily_close_prices = data["Time Series (Daily)"]
@@ -49,4 +67,4 @@ def calculate_stats(data: json):
 
 data = fetch_data("AAPL")
 calculate_stats(data)
-plot_histogram(data)
+plot_histogram(data,4)
